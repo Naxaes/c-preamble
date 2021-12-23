@@ -4,7 +4,7 @@
 #include <stdint.h>  /* The sized integer types */
 #include <stddef.h>  /* size_t */
 
-/* Some sources
+/* Some sources I've taken from:
 https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
 https://dev.to/rdentato/
 */
@@ -51,7 +51,7 @@ typedef i8 bool;
 
 
 /* ---- MACRO UTILITIES ----  */
-#define ARRAY_COUNT(x)     (sizeof(x) / sizeof(*(x)))
+#define ARRAY_COUNT(x) (sizeof(x) / sizeof(*(x)))
 
 /* NOTE(ted): Needed to evaluate other macros.  */
 #define INTERNAL_CONCAT_HELP(x, y)  x ## y
@@ -67,7 +67,7 @@ typedef i8 bool;
 
 
 /* ---- DEBUGGING, LOGGING AND ASSERTIONS ----
-NOTE(ted): Do I need to flush before DEBUG_BREAK,  as the interrupt might
+NOTE(ted): Do I need to flush before DEBUG_BREAK, as the interrupt might
 interrupt the output?
 */
 #ifndef ERROR_LOGGER
@@ -251,3 +251,4 @@ accomplish that.
 
 
 #endif  /* PREAMBLE_HEADER_INCLUDE_GUARD */
+
