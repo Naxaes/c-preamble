@@ -4,6 +4,7 @@
 #include <stdint.h>  /* The sized integer types */
 #include <stddef.h>  /* size_t */
 
+
 /* Some sources I've taken from:
 https://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit
 https://dev.to/rdentato/
@@ -33,13 +34,13 @@ typedef char utf8;  /* Unicode byte         */
 
 
 #ifndef __cplusplus
-typedef i8 bool;
-#ifndef true
-#define true  1
-#endif
-#ifndef false
-#define false 0
-#endif
+    typedef i8 bool;
+    #ifndef true
+        #define true  1
+    #endif
+    #ifndef false
+        #define false 0
+    #endif
 #endif
 
 
@@ -57,12 +58,11 @@ typedef i8 bool;
 #define INTERNAL_CONCAT_HELP(x, y)  x ## y
 #define INTERNAL_CONCATENATE(x, y)  INTERNAL_CONCAT_HELP(x, y)
 #ifndef __COUNTER__
-/* NOTE(ted): Can cause conflicts if used multiple times at the same line, even
-    if the lines are in different files.
-*/
-#define UNIQUE_NAME(name)  INTERNAL_CONCATENATE(name ## _, __LINE__)
+    /* NOTE(ted): Can cause conflicts if used multiple times at the same line, even
+        if the lines are in different files. */
+    #define UNIQUE_NAME(name)  INTERNAL_CONCATENATE(name ## _, __func__)
 #else
-#define UNIQUE_NAME(name)  INTERNAL_CONCATENATE(name ## _, __COUNTER__)
+    #define UNIQUE_NAME(name)  INTERNAL_CONCATENATE(name ## _, __COUNTER__)
 #endif
 
 
@@ -71,19 +71,19 @@ NOTE(ted): Do I need to flush before DEBUG_BREAK, as the interrupt might
 interrupt the output?
 */
 #ifndef ERROR_LOGGER
-#include <stdio.h>  /* fprintf, stderr */
-#define ERROR_LOGGER(...) fprintf(stderr, __VA_ARGS__)
+    #include <stdio.h>  /* fprintf, stderr */
+    #define ERROR_LOGGER(...) fprintf(stderr, __VA_ARGS__)
 #endif
 
 #ifndef STANDARD_LOGGER
-#include <stdio.h>  /* printf */
-#define STANDARD_LOGGER(...) printf(__VA_ARGS__)
+    #include <stdio.h>  /* printf */
+    #define STANDARD_LOGGER(...) printf(__VA_ARGS__)
 #endif
 
 #ifndef DEBUG_BREAK
-#include <signal.h>  /* raise, SIGABRT. SIGTRAP. SIGINT */
-/* TODO(ted): What am I'm doing... Fix this "raise EVERYTHING!!". */
-#define DEBUG_BREAK() (raise(SIGABRT)/*, raise(SIGTRAP), raise(SIGINT)*/)
+    #include <signal.h>  /* raise, SIGABRT. SIGTRAP. SIGINT */
+    /* TODO(ted): What am I'm doing... Fix this "raise EVERYTHING!!". */
+    #define DEBUG_BREAK() (raise(SIGABRT)/*, raise(SIGTRAP), raise(SIGINT)*/)
 #endif
 
 #define HEADER(group)      STANDARD_LOGGER("%s:%d [" #group "]: ", __FILE__, __LINE__)
@@ -119,6 +119,16 @@ interrupt the output?
 #define BITMASK_FLIP(x, mask)       ((x) ^=   (mask))
 #define BITMASK_CHECK_ALL(x, mask)  (!(~(x) & (mask)))
 #define BITMASK_CHECK_ANY(x, mask)  ((x) &    (mask))
+
+
+/* ---- MACROS ---- */
+#if __has_builtin(__builtin_expect)
+    #define UNLIKELY(expression) __builtin_expect(!!(expression), 0)
+    #define LIKELY(expression)   __builtin_expect(!!(expression), 1)
+#else
+    #define UNLIKELY(expression) expression
+    #define LIKELY(expression)   expression
+#endif
 
 
 /* ---- ENUMS ----
@@ -181,10 +191,10 @@ accomplish that.
     printf(BINARY_FORMAT_PATTERN_64 "\n", BYTE_TO_BINARY_CHARS_64(x));
 */
 #ifndef BINARY_FORMAT_PATTERN_PREFIX
-#define BINARY_FORMAT_PATTERN_PREFIX "0b"
+    #define BINARY_FORMAT_PATTERN_PREFIX "0b"
 #endif
 #ifndef BINARY_FORMAT_PATTERN_DELIMITER
-#define BINARY_FORMAT_PATTERN_DELIMITER "_"
+    #define BINARY_FORMAT_PATTERN_DELIMITER "_"
 #endif
 
 #define BINARY_FORMAT_PATTERN_8  BINARY_FORMAT_PATTERN_PREFIX "%c%c%c%c%c%c%c%c"
@@ -201,52 +211,52 @@ accomplish that.
 
 /* ---- OS DETECTION ---- */
 #ifdef _WIN32
-#define OS_NAME "Windows 32-bit"
-#define OS_IS_WINDOWS_32 1
+    #define OS_NAME "Windows 32-bit"
+    #define OS_IS_WINDOWS_32 1
 #endif
 #if _WIN64
-#define OS_NAME "Windows 64-bit"
-#define OS_IS_WINDOWS_64 1
+    #define OS_NAME "Windows 64-bit"
+    #define OS_IS_WINDOWS_64 1
 #endif
 #if __CYGWIN__  /* Windows with Cygwin (POSIX) */
-#define OS_NAME "Windows 32-bit (Cygwin)"
-#define OS_IS_WINDOWS_CYGWIN 1
+    #define OS_NAME "Windows 32-bit (Cygwin)"
+    #define OS_IS_WINDOWS_CYGWIN 1
 #endif
 #if __APPLE__ || __MACH__
-#define OS_NAME "Mac OSX"
-#define OS_IS_MAC_OSX 1
+    #define OS_NAME "Mac OSX"
+    #define OS_IS_MAC_OSX 1
 #endif
 #if __linux__  /* any GNU/Linux distribution */
-#define OS_NAME "Linux"
-#define OS_IS_LINUX 1
+    #define OS_NAME "Linux"
+    #define OS_IS_LINUX 1
 #endif
 #if __unix || __unix__
-#define OS_NAME "Unix"
-#define OS_IS_UNIX 1
+    #define OS_NAME "Unix"
+    #define OS_IS_UNIX 1
 #endif
 #if __FreeBSD__
-#define OS_NAME "FreeBSD"
-#define OS_IS_FREE_BSD 1
+    #define OS_NAME "FreeBSD"
+    #define OS_IS_FREE_BSD 1
 #endif
 #if defined(BSD)  /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD)  */
-#define OS_NAME "BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD)"
-#define OS_IS_BSD 1
+    #define OS_NAME "BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD)"
+    #define OS_IS_BSD 1
 #endif
 #if defined(__QNX__)
-#define OS_NAME "QNX"
-#define OS_IS_QNX 1
+    #define OS_NAME "QNX"
+    #define OS_IS_QNX 1
 #endif
 #if _AIX
-#define OS_NAME "AIX"
-#define OS_IS_AIX 1
+    #define OS_NAME "AIX"
+    #define OS_IS_AIX 1
 #endif
 #if __hpux
-#define OS_NAME "HP-UX"
-#define OS_IS_HP_UX 1
+    #define OS_NAME "HP-UX"
+    #define OS_IS_HP_UX 1
 #endif
 #if __sun  /* Solaris */
-#define OS_NAME "Solaris"
-#define OS_IS_SOLARIS 1
+    #define OS_NAME "Solaris"
+    #define OS_IS_SOLARIS 1
 #endif
 
 
